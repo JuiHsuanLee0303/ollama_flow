@@ -1,0 +1,14 @@
+[project]
+name = "ollama_flow"
+version = "0.1.0"
+description = "A Python library for the Ollama API."
+authors = [{ name = "Warren", email = "warren@example.com" }]
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "pydantic",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
