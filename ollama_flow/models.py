@@ -1,5 +1,5 @@
 """
-Ollama API 的資料模型定義。
+Data model definitions for Ollama API.
 """
 
 from typing import Optional, List, Dict, Any, Union
@@ -7,53 +7,53 @@ from pydantic import BaseModel, Field
 
 
 class GenerateRequest(BaseModel):
-    """Generate API 請求模型"""
-    model: str = Field(..., description="模型名稱")
-    prompt: str = Field(..., description="提示文本")
-    suffix: Optional[str] = Field(None, description="模型回應後的文本")
-    images: Optional[List[str]] = Field(None, description="Base64 編碼的圖像列表")
-    think: Optional[bool] = Field(False, description="是否使用思考模式")
-    format: Optional[Union[str, Dict[str, Any]]] = Field(None, description="回應格式（json 或 JSON schema）")
-    options: Optional[Dict[str, Any]] = Field(None, description="模型參數")
-    system: Optional[str] = Field(None, description="系統訊息")
-    template: Optional[str] = Field(None, description="提示模板")
-    stream: Optional[bool] = Field(True, description="是否使用串流模式")
-    raw: Optional[bool] = Field(False, description="是否使用原始模式")
-    keep_alive: Optional[str] = Field("5m", description="模型保持載入的時間")
-    context: Optional[List[int]] = Field(None, description="上下文（已棄用）")
+    """Generate API request model"""
+    model: str = Field(..., description="Model name")
+    prompt: str = Field(..., description="Prompt text")
+    suffix: Optional[str] = Field(None, description="Text after model response")
+    images: Optional[List[str]] = Field(None, description="List of base64-encoded images")
+    think: Optional[bool] = Field(False, description="Whether to use thinking mode")
+    format: Optional[Union[str, Dict[str, Any]]] = Field(None, description="Response format (json or JSON schema)")
+    options: Optional[Dict[str, Any]] = Field(None, description="Model parameters")
+    system: Optional[str] = Field(None, description="System message")
+    template: Optional[str] = Field(None, description="Prompt template")
+    stream: Optional[bool] = Field(True, description="Whether to use streaming mode")
+    raw: Optional[bool] = Field(False, description="Whether to use raw mode")
+    keep_alive: Optional[str] = Field("5m", description="How long to keep model loaded")
+    context: Optional[List[int]] = Field(None, description="Context (deprecated)")
 
 
 class ChatMessage(BaseModel):
-    """聊天訊息模型"""
-    role: str = Field(..., description="角色：system, user, assistant, tool")
-    content: str = Field(..., description="訊息內容")
-    images: Optional[List[str]] = Field(None, description="Base64 編碼的圖像列表")
-    tool_calls: Optional[List[Dict[str, Any]]] = Field(None, description="工具呼叫")
-    tool_name: Optional[str] = Field(None, description="工具名稱")
+    """Chat message model"""
+    role: str = Field(..., description="Role: system, user, assistant, tool")
+    content: str = Field(..., description="Message content")
+    images: Optional[List[str]] = Field(None, description="List of base64-encoded images")
+    tool_calls: Optional[List[Dict[str, Any]]] = Field(None, description="Tool calls")
+    tool_name: Optional[str] = Field(None, description="Tool name")
 
 
 class ChatRequest(BaseModel):
-    """Chat API 請求模型"""
-    model: str = Field(..., description="模型名稱")
-    messages: List[ChatMessage] = Field(..., description="對話訊息")
-    tools: Optional[List[Dict[str, Any]]] = Field(None, description="工具定義")
-    format: Optional[Union[str, Dict[str, Any]]] = Field(None, description="回應格式（json 或 JSON schema）")
-    options: Optional[Dict[str, Any]] = Field(None, description="模型參數")
-    stream: Optional[bool] = Field(True, description="是否使用串流模式")
-    keep_alive: Optional[str] = Field("5m", description="模型保持載入的時間")
+    """Chat API request model"""
+    model: str = Field(..., description="Model name")
+    messages: List[ChatMessage] = Field(..., description="Chat messages")
+    tools: Optional[List[Dict[str, Any]]] = Field(None, description="Tool definitions")
+    format: Optional[Union[str, Dict[str, Any]]] = Field(None, description="Response format (json or JSON schema)")
+    options: Optional[Dict[str, Any]] = Field(None, description="Model parameters")
+    stream: Optional[bool] = Field(True, description="Whether to use streaming mode")
+    keep_alive: Optional[str] = Field("5m", description="How long to keep model loaded")
 
 
 class EmbedRequest(BaseModel):
-    """Embed API 請求模型"""
-    model: str = Field(..., description="模型名稱")
-    input: Union[str, List[str]] = Field(..., description="輸入文本或文本列表")
-    truncate: Optional[bool] = Field(True, description="是否截斷超出上下文長度的文本")
-    options: Optional[Dict[str, Any]] = Field(None, description="模型參數")
-    keep_alive: Optional[str] = Field("5m", description="模型保持載入的時間")
+    """Embed API request model"""
+    model: str = Field(..., description="Model name")
+    input: Union[str, List[str]] = Field(..., description="Input text or list of texts")
+    truncate: Optional[bool] = Field(True, description="Whether to truncate text exceeding context length")
+    options: Optional[Dict[str, Any]] = Field(None, description="Model parameters")
+    keep_alive: Optional[str] = Field("5m", description="How long to keep model loaded")
 
 
 class GenerateResponse(BaseModel):
-    """Generate API 響應模型"""
+    """Generate API response model"""
     model: str
     created_at: str
     response: str
@@ -69,7 +69,7 @@ class GenerateResponse(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    """Chat API 響應模型"""
+    """Chat API response model"""
     model: str
     created_at: str
     message: ChatMessage
@@ -84,7 +84,7 @@ class ChatResponse(BaseModel):
 
 
 class EmbedResponse(BaseModel):
-    """Embed API 響應模型"""
+    """Embed API response model"""
     model: str
     embeddings: List[List[float]]
     total_duration: Optional[int] = None

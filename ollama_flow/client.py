@@ -1,5 +1,5 @@
 """
-Ollama API 客戶端實現。
+Ollama API client implementation.
 """
 
 import json
@@ -18,32 +18,32 @@ from pydantic import BaseModel
 
 class OllamaClient:
     """
-    Ollama API 客戶端類別。
+    Ollama API client class.
     
-    支援功能：
-    - Generate API（生成完成）
-    - Chat API（聊天完成）
-    - Embed API（生成嵌入）
-    - 結構化輸出
-    - 串流模式
+    Supported features:
+    - Generate API (text completion)
+    - Chat API (chat completion)
+    - Embed API (generate embeddings)
+    - Structured output
+    - Streaming mode
     """
     
     def __init__(self, base_url: str = "http://localhost:11434", timeout: int = 30, check_models: bool = True):
         """
-        初始化 Ollama 客戶端。
+        Initialize Ollama client.
         
         Args:
-            base_url: Ollama 服務器的基礎 URL
-            timeout: 請求超時時間（秒）
-            check_models: 是否在調用前檢查模型是否存在
+            base_url: Base URL of the Ollama server
+            timeout: Request timeout in seconds
+            check_models: Whether to check if model exists before calling
         """
         self.base_url = base_url.rstrip('/')
         self.timeout = timeout
         self.check_models = check_models
         self.session = requests.Session()
-        self._models_cache = None  # 模型列表緩存
+        self._models_cache = None  # Model list cache
         
-        # 設定請求頭
+        # Set request headers
         self.session.headers.update({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -51,16 +51,16 @@ class OllamaClient:
     
     def _make_request(self, endpoint: str, data: Optional[Dict[str, Any]] = None, stream: bool = False, method: str = "POST") -> requests.Response:
         """
-        發送 HTTP 請求。
+        Send HTTP request.
         
         Args:
-            endpoint: API 端點
-            data: 請求資料（可選）
-            stream: 是否使用串流模式
-            method: HTTP 方法（GET 或 POST）
+            endpoint: API endpoint
+            data: Request data (optional)
+            stream: Whether to use streaming mode
+            method: HTTP method (GET or POST)
             
         Returns:
-            HTTP 響應對象
+            HTTP response object
         """
         url = urljoin(self.base_url, endpoint)
         
@@ -82,17 +82,17 @@ class OllamaClient:
             return response
             
         except requests.exceptions.RequestException as e:
-            raise Exception(f"請求失敗：{e}")
+            raise Exception(f"Request failed: {e}")
     
     def _stream_response(self, response: requests.Response) -> Iterator[Dict[str, Any]]:
         """
-        處理串流響應。
+        Handle streaming response.
         
         Args:
-            response: HTTP 響應對象
+            response: HTTP response object
             
         Yields:
-            每個 JSON 響應對象
+            Each JSON response object
         """
         for line in response.iter_lines(decode_unicode=True):
             if line:
@@ -103,13 +103,13 @@ class OllamaClient:
     
     def list_models(self, refresh_cache: bool = False) -> List[str]:
         """
-        獲取可用模型列表。
+        Get list of available models.
         
         Args:
-            refresh_cache: 是否刷新緩存
+            refresh_cache: Whether to refresh cache
             
         Returns:
-            模型名稱列表
+            List of model names
         """
         if self._models_cache is None or refresh_cache:
             try:
@@ -123,19 +123,19 @@ class OllamaClient:
                 self._models_cache = models
                 return models
             except Exception as e:
-                raise Exception(f"獲取模型列表失敗：{e}")
+                raise Exception(f"Failed to get model list: {e}")
         
         return self._models_cache or []
     
     def _check_model_exists(self, model: str) -> None:
         """
-        檢查模型是否存在。
+        Check if model exists.
         
         Args:
-            model: 模型名稱
+            model: Model name
             
         Raises:
-            ValueError: 如果模型不存在
+            ValueError: If model does not exist
         """
         if not self.check_models:
             return
@@ -143,15 +143,15 @@ class OllamaClient:
         available_models = self.list_models()
         if model not in available_models:
             raise ValueError(
-                f"模型 '{model}' 不存在。可用模型：{', '.join(available_models)}"
+                f"Model '{model}' does not exist. Available models: {', '.join(available_models)}"
             )
     
     def refresh_models_cache(self) -> List[str]:
         """
-        刷新模型緩存並返回最新的模型列表。
+        Refresh model cache and return latest model list.
         
         Returns:
-            最新的模型名稱列表
+            Latest list of model names
         """
         return self.list_models(refresh_cache=True)
     
@@ -173,27 +173,27 @@ class OllamaClient:
         context: Optional[List[int]] = None
     ) -> Union[GenerateResponse, Iterator[Dict[str, Any]]]:
         """
-        生成完成（Generate API）。
+        Generate completion (Generate API).
         
         Args:
-            model: 模型名稱
-            prompt: 提示文本
-            suffix: 模型回應後的文本
-            images: Base64 編碼的圖像列表
-            think: 是否使用思考模式
-            format: 回應格式（json 或 JSON schema）
-            options: 模型參數
-            system: 系統訊息
-            template: 提示模板
-            stream: 是否使用串流模式
-            raw: 是否使用原始模式
-            keep_alive: 模型保持載入的時間
-            context: 上下文（已棄用）
+            model: Model name
+            prompt: Prompt text
+            suffix: Text after model response
+            images: List of base64-encoded images
+            think: Whether to use thinking mode
+            format: Response format (json or JSON schema)
+            options: Model parameters
+            system: System message
+            template: Prompt template
+            stream: Whether to use streaming mode
+            raw: Whether to use raw mode
+            keep_alive: How long to keep model loaded
+            context: Context (deprecated)
             
         Returns:
-            GenerateResponse 或串流響應迭代器
+            GenerateResponse or streaming response iterator
         """
-        # 檢查模型是否存在
+        # Check if model exists
         self._check_model_exists(model)
         
         request = GenerateRequest(
@@ -232,24 +232,24 @@ class OllamaClient:
         keep_alive: str = "5m"
     ) -> Union[ChatResponse, Iterator[Dict[str, Any]]]:
         """
-        聊天完成（Chat API）。
+        Chat completion (Chat API).
         
         Args:
-            model: 模型名稱
-            messages: 對話訊息列表
-            tools: 工具定義
-            format: 回應格式（json 或 JSON schema）
-            options: 模型參數
-            stream: 是否使用串流模式
-            keep_alive: 模型保持載入的時間
+            model: Model name
+            messages: List of chat messages
+            tools: Tool definitions
+            format: Response format (json or JSON schema)
+            options: Model parameters
+            stream: Whether to use streaming mode
+            keep_alive: How long to keep model loaded
             
         Returns:
-            ChatResponse 或串流響應迭代器
+            ChatResponse or streaming response iterator
         """
-        # 檢查模型是否存在
+        # Check if model exists
         self._check_model_exists(model)
         
-        # 轉換訊息格式
+        # Convert message format
         chat_messages = []
         for msg in messages:
             if isinstance(msg, dict):
@@ -285,19 +285,19 @@ class OllamaClient:
         keep_alive: str = "5m"
     ) -> EmbedResponse:
         """
-        生成嵌入（Embed API）。
+        Generate embeddings (Embed API).
         
         Args:
-            model: 模型名稱
-            input: 輸入文本或文本列表
-            truncate: 是否截斷超出上下文長度的文本
-            options: 模型參數
-            keep_alive: 模型保持載入的時間
+            model: Model name
+            input: Input text or list of texts
+            truncate: Whether to truncate text exceeding context length
+            options: Model parameters
+            keep_alive: How long to keep model loaded
             
         Returns:
             EmbedResponse
         """
-        # 檢查模型是否存在
+        # Check if model exists
         self._check_model_exists(model)
         
         request = EmbedRequest(
@@ -312,7 +312,7 @@ class OllamaClient:
         data = response.json()
         return EmbedResponse.model_validate(data)
     
-    # 便利方法
+    # Convenience methods
     def generate_json(
         self,
         model: str,
@@ -320,15 +320,15 @@ class OllamaClient:
         **kwargs
     ) -> Union[GenerateResponse, Iterator[Dict[str, Any]]]:
         """
-        生成 JSON 格式的回應。
+        Generate JSON format response.
         
         Args:
-            model: 模型名稱
-            prompt: 提示文本
-            **kwargs: 其他參數
+            model: Model name
+            prompt: Prompt text
+            **kwargs: Other parameters
             
         Returns:
-            GenerateResponse 或串流響應迭代器
+            GenerateResponse or streaming response iterator
         """
         return self.generate(model, prompt, format="json", **kwargs)
     
@@ -340,16 +340,16 @@ class OllamaClient:
         **kwargs
     ) -> Union[GenerateResponse, Iterator[Dict[str, Any]]]:
         """
-        生成結構化回應。
+        Generate structured response.
         
         Args:
-            model: 模型名稱
-            prompt: 提示文本
-            schema: Pydantic 模型類別或 JSON schema 字典
-            **kwargs: 其他參數
+            model: Model name
+            prompt: Prompt text
+            schema: Pydantic model class or JSON schema dictionary
+            **kwargs: Other parameters
             
         Returns:
-            GenerateResponse 或串流響應迭代器
+            GenerateResponse or streaming response iterator
         """
         if isinstance(schema, type) and issubclass(schema, BaseModel):
             format_schema = StructuredOutput.from_pydantic(schema)
@@ -365,15 +365,15 @@ class OllamaClient:
         **kwargs
     ) -> Union[ChatResponse, Iterator[Dict[str, Any]]]:
         """
-        聊天生成 JSON 格式的回應。
+        Chat generate JSON format response.
         
         Args:
-            model: 模型名稱
-            messages: 對話訊息列表
-            **kwargs: 其他參數
+            model: Model name
+            messages: List of chat messages
+            **kwargs: Other parameters
             
         Returns:
-            ChatResponse 或串流響應迭代器
+            ChatResponse or streaming response iterator
         """
         return self.chat(model, messages, format="json", **kwargs)
     
@@ -385,16 +385,16 @@ class OllamaClient:
         **kwargs
     ) -> Union[ChatResponse, Iterator[Dict[str, Any]]]:
         """
-        聊天生成結構化回應。
+        Chat generate structured response.
         
         Args:
-            model: 模型名稱
-            messages: 對話訊息列表
-            schema: Pydantic 模型類別或 JSON schema 字典
-            **kwargs: 其他參數
+            model: Model name
+            messages: List of chat messages
+            schema: Pydantic model class or JSON schema dictionary
+            **kwargs: Other parameters
             
         Returns:
-            ChatResponse 或串流響應迭代器
+            ChatResponse or streaming response iterator
         """
         if isinstance(schema, type) and issubclass(schema, BaseModel):
             format_schema = StructuredOutput.from_pydantic(schema)
@@ -409,21 +409,21 @@ class OllamaClient:
         model_class: Optional[Type[BaseModel]] = None
     ) -> Any:
         """
-        解析結構化響應。
+        Parse structured response.
         
         Args:
-            response: 響應字符串
-            model_class: 可選的 Pydantic 模型類別
+            response: Response string
+            model_class: Optional Pydantic model class
             
         Returns:
-            解析後的對象
+            Parsed object
         """
         return StructuredOutput.parse_response(response, model_class)
     
     def __enter__(self):
-        """上下文管理器進入"""
+        """Context manager enter"""
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """上下文管理器退出"""
+        """Context manager exit"""
         self.session.close() 

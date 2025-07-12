@@ -1,5 +1,5 @@
 """
-串流模式範例
+Streaming Mode Examples
 """
 
 from ollama_flow import OllamaClient, ChatMessage
@@ -7,53 +7,53 @@ import time
 
 
 def generate_streaming_example():
-    """生成串流範例"""
-    print("=== 生成串流範例 ===")
+    """Generate streaming example"""
+    print("=== Generate Streaming Example ===")
     
     client = OllamaClient()
     
-    print("正在生成回應...")
-    print("回應內容：", end="", flush=True)
+    print("Generating response...")
+    print("Response content: ", end="", flush=True)
     
     response_stream = client.generate(
         model="llama3.2",
-        prompt="請詳細解釋什麼是人工智慧，並舉例說明其應用領域。",
+        prompt="Please explain what artificial intelligence is in detail and give examples of its application areas.",
         stream=True
     )
     
     full_response = ""
     for chunk in response_stream:
         if chunk.get("done", False):
-            print(f"\n\n=== 統計資訊 ===")
-            print(f"總時間：{chunk.get('total_duration', 0) / 1e9:.2f}秒")
-            print(f"載入時間：{chunk.get('load_duration', 0) / 1e9:.2f}秒")
-            print(f"生成時間：{chunk.get('eval_duration', 0) / 1e9:.2f}秒")
-            print(f"生成字元數：{chunk.get('eval_count', 0)}")
+            print(f"\n\n=== Statistics ===")
+            print(f"Total time: {chunk.get('total_duration', 0) / 1e9:.2f} seconds")
+            print(f"Load time: {chunk.get('load_duration', 0) / 1e9:.2f} seconds")
+            print(f"Generation time: {chunk.get('eval_duration', 0) / 1e9:.2f} seconds")
+            print(f"Generated tokens: {chunk.get('eval_count', 0)}")
             if chunk.get('eval_count', 0) > 0 and chunk.get('eval_duration', 0) > 0:
                 tokens_per_sec = chunk.get('eval_count', 0) / (chunk.get('eval_duration', 0) / 1e9)
-                print(f"生成速度：{tokens_per_sec:.2f} tokens/秒")
+                print(f"Generation speed: {tokens_per_sec:.2f} tokens/sec")
             break
         else:
             response_text = chunk.get("response", "")
             print(response_text, end="", flush=True)
             full_response += response_text
     
-    print(f"\n完整回應長度：{len(full_response)} 字元")
+    print(f"\nFull response length: {len(full_response)} characters")
 
 
 def chat_streaming_example():
-    """聊天串流範例"""
-    print("\n=== 聊天串流範例 ===")
+    """Chat streaming example"""
+    print("\n=== Chat Streaming Example ===")
     
     client = OllamaClient()
     
     messages = [
-        ChatMessage(role="system", content="你是一個有用的程式設計助手。"),
-        ChatMessage(role="user", content="請解釋 Python 中的裝飾器（decorator）是什麼，並提供一個實用的例子。")
+        ChatMessage(role="system", content="You are a helpful programming assistant."),
+        ChatMessage(role="user", content="Please explain what decorators are in Python and provide a practical example.")
     ]
     
-    print("正在生成回應...")
-    print("回應內容：", end="", flush=True)
+    print("Generating response...")
+    print("Response content: ", end="", flush=True)
     
     response_stream = client.chat(
         model="llama3.2",
@@ -64,11 +64,11 @@ def chat_streaming_example():
     full_response = ""
     for chunk in response_stream:
         if chunk.get("done", False):
-            print(f"\n\n=== 統計資訊 ===")
-            print(f"總時間：{chunk.get('total_duration', 0) / 1e9:.2f}秒")
-            print(f"載入時間：{chunk.get('load_duration', 0) / 1e9:.2f}秒")
-            print(f"生成時間：{chunk.get('eval_duration', 0) / 1e9:.2f}秒")
-            print(f"生成字元數：{chunk.get('eval_count', 0)}")
+            print(f"\n\n=== Statistics ===")
+            print(f"Total time: {chunk.get('total_duration', 0) / 1e9:.2f} seconds")
+            print(f"Load time: {chunk.get('load_duration', 0) / 1e9:.2f} seconds")
+            print(f"Generation time: {chunk.get('eval_duration', 0) / 1e9:.2f} seconds")
+            print(f"Generated tokens: {chunk.get('eval_count', 0)}")
             break
         else:
             message = chunk.get("message", {})
@@ -76,33 +76,33 @@ def chat_streaming_example():
             print(response_text, end="", flush=True)
             full_response += response_text
     
-    print(f"\n完整回應長度：{len(full_response)} 字元")
+    print(f"\nFull response length: {len(full_response)} characters")
 
 
 def interactive_chat_example():
-    """互動式聊天範例"""
-    print("\n=== 互動式聊天範例 ===")
-    print("輸入 'quit' 或 'exit' 結束對話")
+    """Interactive chat example"""
+    print("\n=== Interactive Chat Example ===")
+    print("Type 'quit' or 'exit' to end the conversation")
     
     client = OllamaClient()
     
-    # 初始化對話記錄
+    # Initialize conversation history
     conversation_history = [
-        ChatMessage(role="system", content="你是一個友善的聊天助手。請保持回答簡潔。")
+        ChatMessage(role="system", content="You are a friendly chat assistant. Please keep your responses concise.")
     ]
     
     while True:
-        user_input = input("\n你：")
-        if user_input.lower() in ['quit', 'exit', '退出']:
-            print("再見！")
+        user_input = input("\nYou: ")
+        if user_input.lower() in ['quit', 'exit']:
+            print("Goodbye!")
             break
         
-        # 添加用戶訊息到對話記錄
+        # Add user message to conversation history
         conversation_history.append(ChatMessage(role="user", content=user_input))
         
-        print("助手：", end="", flush=True)
+        print("Assistant: ", end="", flush=True)
         
-        # 生成回應
+        # Generate response
         response_stream = client.chat(
             model="llama3.2",
             messages=conversation_history,
@@ -119,48 +119,48 @@ def interactive_chat_example():
                 print(response_text, end="", flush=True)
                 assistant_response += response_text
         
-        # 添加助手回應到對話記錄
+        # Add assistant response to conversation history
         conversation_history.append(ChatMessage(role="assistant", content=assistant_response))
         
-        print()  # 換行
+        print()  # New line
 
 
 def streaming_with_progress():
-    """帶進度顯示的串流範例"""
-    print("\n=== 帶進度顯示的串流範例 ===")
+    """Streaming example with progress display"""
+    print("\n=== Streaming with Progress Display ===")
     
     client = OllamaClient()
     
-    print("正在生成回應...")
+    print("Generating response...")
     
     response_stream = client.generate(
         model="llama3.2",
-        prompt="寫一篇關於可持續發展的短文，約200字。",
+        prompt="Write a short essay about sustainable development, approximately 200 words.",
         stream=True
     )
     
     start_time = time.time()
     char_count = 0
     
-    print("進度：", end="", flush=True)
+    print("Progress: ", end="", flush=True)
     
     for chunk in response_stream:
         if chunk.get("done", False):
             elapsed_time = time.time() - start_time
-            print(f"\n\n=== 完成 ===")
-            print(f"總字元數：{char_count}")
-            print(f"總時間：{elapsed_time:.2f}秒")
-            print(f"平均速度：{char_count / elapsed_time:.2f} 字元/秒")
+            print(f"\n\n=== Completed ===")
+            print(f"Total characters: {char_count}")
+            print(f"Total time: {elapsed_time:.2f} seconds")
+            print(f"Average speed: {char_count / elapsed_time:.2f} chars/sec")
             break
         else:
             response_text = chunk.get("response", "")
             char_count += len(response_text)
             
-            # 顯示進度點
+            # Show progress dots
             if char_count % 10 == 0:
                 print(".", end="", flush=True)
     
-    print("\n生成完成！")
+    print("\nGeneration completed!")
 
 
 if __name__ == "__main__":
@@ -168,5 +168,5 @@ if __name__ == "__main__":
     chat_streaming_example()
     streaming_with_progress()
     
-    # 互動式聊天（註解掉以避免在自動化測試中等待輸入）
+    # Interactive chat (commented out to avoid waiting for input in automated tests)
     # interactive_chat_example() 

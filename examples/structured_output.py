@@ -1,5 +1,5 @@
 """
-結構化輸出範例
+Structured Output Examples
 """
 
 from ollama_flow import OllamaClient, ChatMessage, StructuredOutput
@@ -9,71 +9,71 @@ import json
 
 
 class Product(BaseModel):
-    """產品資訊模型"""
-    name: str = Field(..., description="產品名稱")
-    price: float = Field(..., description="價格")
-    category: str = Field(..., description="分類")
-    description: str = Field(..., description="描述")
-    features: List[str] = Field(..., description="功能特點")
-    in_stock: bool = Field(..., description="是否有庫存")
+    """Product information model"""
+    name: str = Field(..., description="Product name")
+    price: float = Field(..., description="Price")
+    category: str = Field(..., description="Category")
+    description: str = Field(..., description="Description")
+    features: List[str] = Field(..., description="Feature list")
+    in_stock: bool = Field(..., description="Whether in stock")
 
 
 class BookSummary(BaseModel):
-    """書籍摘要模型"""
-    title: str = Field(..., description="書名")
-    author: str = Field(..., description="作者")
-    genre: str = Field(..., description="類型")
-    main_themes: List[str] = Field(..., description="主要主題")
-    rating: int = Field(..., description="評分 (1-10)")
-    summary: str = Field(..., description="摘要")
+    """Book summary model"""
+    title: str = Field(..., description="Book title")
+    author: str = Field(..., description="Author")
+    genre: str = Field(..., description="Genre")
+    main_themes: List[str] = Field(..., description="Main themes")
+    rating: int = Field(..., description="Rating (1-10)")
+    summary: str = Field(..., description="Summary")
 
 
 class WeatherInfo(BaseModel):
-    """天氣資訊模型"""
-    location: str = Field(..., description="地點")
-    temperature: float = Field(..., description="溫度")
-    humidity: int = Field(..., description="濕度百分比")
-    condition: str = Field(..., description="天氣狀況")
-    wind_speed: Optional[float] = Field(None, description="風速")
+    """Weather information model"""
+    location: str = Field(..., description="Location")
+    temperature: float = Field(..., description="Temperature")
+    humidity: int = Field(..., description="Humidity percentage")
+    condition: str = Field(..., description="Weather condition")
+    wind_speed: Optional[float] = Field(None, description="Wind speed")
 
 
 def pydantic_schema_example():
-    """使用 Pydantic 模型的結構化輸出範例"""
-    print("=== Pydantic 模型結構化輸出範例 ===")
+    """Structured output example using Pydantic model"""
+    print("=== Pydantic Model Structured Output Example ===")
     
     client = OllamaClient()
     
-    # 生成產品資訊
+    # Generate product information
     response = client.generate_structured(
         model="llama3.2",
-        prompt="創建一個智慧型手機的產品資訊。請用 JSON 格式回應。",
+        prompt="Create product information for a smartphone. Please respond in JSON format.",
         schema=Product,
         stream=False
     )
     
-    print(f"原始回應：{response.response}")
+    print(f"Raw response: {response.response}")
     
-    # 解析結構化回應
+    # Parse structured response
     try:
         product = client.parse_structured_response(response.response, Product)
-        print(f"\n解析後的產品資訊：")
-        print(f"名稱：{product.name}")
-        print(f"價格：${product.price}")
-        print(f"分類：{product.category}")
-        print(f"描述：{product.description}")
-        print(f"功能：{', '.join(product.features)}")
-        print(f"庫存：{'有' if product.in_stock else '無'}")
+        print(f"\nParsed product information:")
+        print(f"Name: {product.name}")
+        print(f"Price: ${product.price}")
+        print(f"Category: {product.category}")
+        print(f"Description: {product.description}")
+        print(f"Features: {', '.join(product.features)}")
+        print(f"In Stock: {'Yes' if product.in_stock else 'No'}")
     except Exception as e:
-        print(f"解析錯誤：{e}")
+        print(f"Parsing error: {e}")
 
 
 def json_schema_example():
-    """使用 JSON Schema 字典的結構化輸出範例"""
-    print("\n=== JSON Schema 結構化輸出範例 ===")
+    """Structured output example using JSON Schema dictionary"""
+    print("\n=== JSON Schema Structured Output Example ===")
     
     client = OllamaClient()
     
-    # 自定義 JSON Schema
+    # Custom JSON Schema
     person_schema = {
         "type": "object",
         "properties": {
@@ -88,35 +88,35 @@ def json_schema_example():
     
     response = client.generate_structured(
         model="llama3.2",
-        prompt="創建一個虛構角色的個人資訊。請用 JSON 格式回應。",
+        prompt="Create personal information for a fictional character. Please respond in JSON format.",
         schema=person_schema,
         stream=False
     )
     
-    print(f"原始回應：{response.response}")
+    print(f"Raw response: {response.response}")
     
-    # 解析回應
+    # Parse response
     try:
         person_data = json.loads(response.response)
-        print(f"\n解析後的角色資訊：")
-        print(f"姓名：{person_data.get('name', 'N/A')}")
-        print(f"年齡：{person_data.get('age', 'N/A')}")
-        print(f"職業：{person_data.get('occupation', 'N/A')}")
-        print(f"愛好：{', '.join(person_data.get('hobbies', []))}")
-        print(f"已婚：{'是' if person_data.get('married', False) else '否'}")
+        print(f"\nParsed character information:")
+        print(f"Name: {person_data.get('name', 'N/A')}")
+        print(f"Age: {person_data.get('age', 'N/A')}")
+        print(f"Occupation: {person_data.get('occupation', 'N/A')}")
+        print(f"Hobbies: {', '.join(person_data.get('hobbies', []))}")
+        print(f"Married: {'Yes' if person_data.get('married', False) else 'No'}")
     except json.JSONDecodeError as e:
-        print(f"JSON 解析錯誤：{e}")
+        print(f"JSON parsing error: {e}")
 
 
 def chat_structured_example():
-    """聊天模式的結構化輸出範例"""
-    print("\n=== 聊天模式結構化輸出範例 ===")
+    """Structured output example in chat mode"""
+    print("\n=== Chat Mode Structured Output Example ===")
     
     client = OllamaClient()
     
     messages = [
-        ChatMessage(role="system", content="你是一個書籍推薦助手。"),
-        ChatMessage(role="user", content="推薦一本科幻小說，並提供詳細資訊。請用 JSON 格式回應。")
+        ChatMessage(role="system", content="You are a book recommendation assistant."),
+        ChatMessage(role="user", content="Recommend a science fiction novel and provide detailed information. Please respond in JSON format.")
     ]
     
     response = client.chat_structured(
@@ -126,43 +126,43 @@ def chat_structured_example():
         stream=False
     )
     
-    print(f"原始回應：{response.message.content}")
+    print(f"Raw response: {response.message.content}")
     
-    # 解析結構化回應
+    # Parse structured response
     try:
         book = client.parse_structured_response(response.message.content, BookSummary)
-        print(f"\n推薦書籍：")
-        print(f"書名：{book.title}")
-        print(f"作者：{book.author}")
-        print(f"類型：{book.genre}")
-        print(f"主要主題：{', '.join(book.main_themes)}")
-        print(f"評分：{book.rating}/10")
-        print(f"摘要：{book.summary}")
+        print(f"\nRecommended book:")
+        print(f"Title: {book.title}")
+        print(f"Author: {book.author}")
+        print(f"Genre: {book.genre}")
+        print(f"Main themes: {', '.join(book.main_themes)}")
+        print(f"Rating: {book.rating}/10")
+        print(f"Summary: {book.summary}")
     except Exception as e:
-        print(f"解析錯誤：{e}")
+        print(f"Parsing error: {e}")
 
 
 def json_mode_example():
-    """JSON 模式範例"""
-    print("\n=== JSON 模式範例 ===")
+    """JSON mode example"""
+    print("\n=== JSON Mode Example ===")
     
     client = OllamaClient()
     
     response = client.generate_json(
         model="llama3.2",
-        prompt="列出三個程式設計語言及其主要特點。請用 JSON 格式回應。",
+        prompt="List three programming languages and their main features. Please respond in JSON format.",
         stream=False
     )
     
-    print(f"原始回應：{response.response}")
+    print(f"Raw response: {response.response}")
     
-    # 解析 JSON 回應
+    # Parse JSON response
     try:
         data = json.loads(response.response)
-        print(f"\n解析後的資料：")
+        print(f"\nParsed data:")
         print(json.dumps(data, indent=2, ensure_ascii=False))
     except json.JSONDecodeError as e:
-        print(f"JSON 解析錯誤：{e}")
+        print(f"JSON parsing error: {e}")
 
 
 if __name__ == "__main__":

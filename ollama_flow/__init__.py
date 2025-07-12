@@ -1,10 +1,10 @@
 """
 Ollama Flow - A Python library for the Ollama API.
 
-主要功能：
-- 支援 generate, chat, embed 端點
-- 結構化輸出支援
-- 串流模式支援
+Main features:
+- Support for generate, chat, embed endpoints
+- Structured output support
+- Streaming mode support
 """
 
 from .client import OllamaClient

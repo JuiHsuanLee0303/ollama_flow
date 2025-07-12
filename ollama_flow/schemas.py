@@ -1,5 +1,5 @@
 """
-結構化輸出支援模組。
+Structured output support module.
 """
 
 from typing import Dict, Any, Type, Optional
@@ -9,56 +9,56 @@ import json
 
 class StructuredOutput:
     """
-    結構化輸出輔助類別，用於生成 JSON Schema 並處理結構化響應。
+    Structured output helper class for generating JSON Schema and handling structured responses.
     """
     
     @staticmethod
     def from_pydantic(model_class: Type[BaseModel]) -> Dict[str, Any]:
         """
-        從 Pydantic 模型生成 JSON Schema。
+        Generate JSON Schema from Pydantic model.
         
         Args:
-            model_class: Pydantic 模型類別
+            model_class: Pydantic model class
             
         Returns:
-            JSON Schema 字典
+            JSON Schema dictionary
         """
         return model_class.model_json_schema()
     
     @staticmethod
     def from_dict(schema: Dict[str, Any]) -> Dict[str, Any]:
         """
-        從字典生成 JSON Schema。
+        Generate JSON Schema from dictionary.
         
         Args:
-            schema: Schema 字典
+            schema: Schema dictionary
             
         Returns:
-            JSON Schema 字典
+            JSON Schema dictionary
         """
         return schema
     
     @staticmethod
     def json_mode() -> str:
         """
-        返回 JSON 模式標識符。
+        Return JSON mode identifier.
         
         Returns:
-            "json" 字符串
+            "json" string
         """
         return "json"
     
     @staticmethod
     def parse_response(response: str, model_class: Optional[Type[BaseModel]] = None) -> Any:
         """
-        解析結構化響應。
+        Parse structured response.
         
         Args:
-            response: 響應字符串
-            model_class: 可選的 Pydantic 模型類別
+            response: Response string
+            model_class: Optional Pydantic model class
             
         Returns:
-            解析後的對象
+            Parsed object
         """
         try:
             data = json.loads(response)
@@ -66,36 +66,36 @@ class StructuredOutput:
                 return model_class.model_validate(data)
             return data
         except json.JSONDecodeError as e:
-            raise ValueError(f"無法解析 JSON 響應：{e}")
+            raise ValueError(f"Unable to parse JSON response: {e}")
         except Exception as e:
-            raise ValueError(f"無法驗證響應資料：{e}")
+            raise ValueError(f"Unable to validate response data: {e}")
 
 
-# 便利函數
+# Convenience functions
 def create_json_schema(model_class: Type[BaseModel]) -> Dict[str, Any]:
     """
-    建立 JSON Schema 的便利函數。
+    Convenience function to create JSON Schema.
     
     Args:
-        model_class: Pydantic 模型類別
+        model_class: Pydantic model class
         
     Returns:
-        JSON Schema 字典
+        JSON Schema dictionary
     """
     return StructuredOutput.from_pydantic(model_class)
 
 
 def json_format() -> str:
     """
-    返回 JSON 格式標識符的便利函數。
+    Convenience function to return JSON format identifier.
     
     Returns:
-        "json" 字符串
+        "json" string
     """
     return StructuredOutput.json_mode()
 
 
-# 常用的 JSON Schema 範例
+# Common JSON Schema examples
 COMMON_SCHEMAS = {
     "person": {
         "type": "object",

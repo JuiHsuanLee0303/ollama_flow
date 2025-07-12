@@ -1,5 +1,5 @@
 """
-Ollama Flow 使用範例
+Ollama Flow Usage Examples
 """
 
 from ollama_flow import OllamaClient, ChatMessage, StructuredOutput
@@ -8,78 +8,78 @@ from typing import List
 
 
 class PersonInfo(BaseModel):
-    """人物資訊模型"""
-    name: str = Field(..., description="姓名")
-    age: int = Field(..., description="年齡")
-    occupation: str = Field(..., description="職業")
-    skills: List[str] = Field(..., description="技能列表")
+    """Person information model"""
+    name: str = Field(..., description="Name")
+    age: int = Field(..., description="Age")
+    occupation: str = Field(..., description="Occupation")
+    skills: List[str] = Field(..., description="List of skills")
 
 
 def main():
-    print("=== Ollama Flow 使用範例 ===")
+    print("=== Ollama Flow Usage Examples ===")
     
-    # 建立客戶端
+    # Create client
     client = OllamaClient(base_url="http://localhost:11434")
     
     try:
-        # 範例 1: 基本生成
-        print("\n1. 基本生成範例：")
+        # Example 1: Basic generation
+        print("\n1. Basic Generation Example:")
         response = client.generate(
             model="qwen3:4b-q4_K_M",
-            prompt="解釋什麼是機器學習？",
+            prompt="Explain what machine learning is?",
             stream=False
         )
-        print(f"回應：{response.response}")
+        print(f"Response: {response.response}")
         
-        # 範例 2: 聊天對話
-        print("\n2. 聊天對話範例：")
+        # Example 2: Chat conversation
+        print("\n2. Chat Conversation Example:")
         messages = [
-            ChatMessage(role="user", content="你好！你是誰？")
+            ChatMessage(role="user", content="Hello! Who are you?")
         ]
         chat_response = client.chat(
             model="qwen3:4b-q4_K_M",
             messages=messages,
             stream=False
         )
-        print(f"回應：{chat_response.message.content}")
+        print(f"Response: {chat_response.message.content}")
         
-        # 範例 3: 結構化輸出
-        print("\n3. 結構化輸出範例：")
+        # Example 3: Structured output
+        print("\n3. Structured Output Example:")
         structured_response = client.generate_structured(
             model="qwen3:4b-q4_K_M",
-            prompt="介紹一個虛構的軟體工程師角色。請以 JSON 格式回應。",
+            prompt="Introduce a fictional software engineer character. Please respond in JSON format.",
             schema=PersonInfo,
             stream=False
         )
-        print(f"結構化回應：{structured_response.response}")
+        print(f"Structured Response: {structured_response.response}")
         
-        # 解析結構化回應
+        # Parse structured response
         person_data = client.parse_structured_response(
             structured_response.response,
             PersonInfo
         )
-        print(f"解析後的資料：{person_data}")
+        print(f"Parsed Data: {person_data}")
         
-        # 範例 4: JSON 模式
-        print("\n4. JSON 模式範例：")
+        # Example 4: JSON mode
+        print("\n4. JSON Mode Example:")
         json_response = client.generate_json(
             model="qwen3:4b-q4_K_M",
-            prompt="列出三個程式設計語言及其特點。請以 JSON 格式回應。",
+            prompt="List three programming languages and their features. Please respond in JSON format.",
             stream=False
         )
-        print(f"JSON 回應：{json_response.response}")
+        print(f"JSON Response: {json_response.response}")
         
-        # 範例 5: 生成嵌入
-        print("\n5. 生成嵌入範例：")
+        # Example 5: Generate embeddings
+        print("\n5. Generate Embeddings Example:")
         embed_response = client.embed(
             model="bge-m3:latest",
-            input="這是一段測試文本"
+            input="This is a test text"
         )
-        print(f"嵌入維度：{len(embed_response.embeddings[0])}")
+        print(f"Embedding Dimension: {len(embed_response.embeddings[0])}")
         
     except Exception as e:
-        print(f"錯誤：{e}")
-        print("請確保 Ollama 服務正在運行，並且已安裝所需的模型。")
+        print(f"Error: {e}")
+        print("Please ensure Ollama service is running and required models are installed.")
 
 
 if __name__ == "__main__":

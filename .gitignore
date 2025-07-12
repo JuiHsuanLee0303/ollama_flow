@@ -8,3 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Ignore test generated cache data
+__pycache__/
+*.pyc
+*.pyo
+
+# pytest cache files
+.cache/
+
+# Test output data (if any)
+tests/output/
+tests/temp/
