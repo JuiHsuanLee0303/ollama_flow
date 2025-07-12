@@ -20,3 +20,5 @@ __pycache__/
 # Test output data (if any)
 tests/output/
 tests/temp/
+
+.env

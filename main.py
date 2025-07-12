@@ -19,7 +19,7 @@ def main():
     print("=== Ollama Flow Usage Examples ===")
     
     # Create client
-    client = OllamaClient(base_url="http://localhost:11434")
+    client = OllamaClient(base_url="http://localhost:11434", timeout=60)
     
     try:
         # Example 1: Basic generation
@@ -27,7 +27,8 @@ def main():
         response = client.generate(
             model="qwen3:4b-q4_K_M",
             prompt="Explain what machine learning is?",
-            stream=False
+            stream=False,
+            think=False
         )
         print(f"Response: {response.response}")
         
@@ -39,7 +40,8 @@ def main():
         chat_response = client.chat(
             model="qwen3:4b-q4_K_M",
             messages=messages,
-            stream=False
+            stream=False,
+            think=False
         )
         print(f"Response: {chat_response.message.content}")
         
@@ -49,7 +51,8 @@ def main():
             model="qwen3:4b-q4_K_M",
             prompt="Introduce a fictional software engineer character. Please respond in JSON format.",
             schema=PersonInfo,
-            stream=False
+            stream=False,
+            think=False
         )
         print(f"Structured Response: {structured_response.response}")
         
@@ -65,7 +68,8 @@ def main():
         json_response = client.generate_json(
             model="qwen3:4b-q4_K_M",
             prompt="List three programming languages and their features. Please respond in JSON format.",
-            stream=False
+            stream=False,
+            think=False
         )
         print(f"JSON Response: {json_response.response}")
         
